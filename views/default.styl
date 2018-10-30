@@ -1,0 +1,269 @@
+dark-color1 = #1a237e
+dark-color2 = #283593
+dark-color3 = #303f9f
+dark-color4 = #3949ab
+light-color1 = #e8eaf6
+light-color2 = #c5cae9
+light-color3 = #9fa8da
+
+body
+  background-color light-color1
+  color dark-color1
+  cursor default
+  font-family 'Roboto', sans-serif
+  margin 0
+  overflow-x hidden
+
+main.single
+  background-color dark-color2
+  min-height 100vh
+  padding 6em 0 4em
+
+  h1
+    color light-color1
+    font-size 48pt
+
+  p.lead
+    color light-color2
+    font-size 24pt
+
+  p.navigation
+    color light-color3
+    font-size 20pt
+
+  a
+    color light-color2
+
+    &:hover
+      text-decoration none
+
+main
+  .header
+    min-height 500px
+
+    .calendar
+      border .5em solid dark-color3
+      border-radius 10%
+      display inline-block
+      margin 8em auto 4em
+      padding 2em 4em
+      text-align center
+
+      .month
+        font-size 24pt
+
+      .date
+        font-size 72pt
+
+    .hello
+      margin 8em 0 1em
+      padding-right 4em
+
+      .jumbot
+        color #222
+        font-size 32pt
+
+        strong.proclub
+          color dark-color1
+          font-size 72pt
+
+        .bold
+          color dark-color1
+
+        p.lead
+          font-size 16pt
+          margin .5em 0 1em
+
+    .schedule
+      color #222
+      font-size 16pt
+      padding-bottom 8em
+      text-align center
+
+      .bold
+        color dark-color1
+        font-size 24pt
+
+      .where
+        margin-top 2em
+
+        a
+          color #222
+
+          &:hover
+            text-decoration none
+
+  h2.title.light, h2.title.dark
+    font-size 22pt
+    margin 0
+    padding .5em 0 .25em
+    text-align center
+
+  h2.title.light
+    color light-color1
+
+  h2.title.dark
+    color #222
+
+  .reasons
+    background-color dark-color2
+    color light-color2
+    padding 1em 0 4em
+
+    .row
+      margin 4em 0 0
+
+    .boxer
+      text-align center
+
+      h3, p
+        margin 0
+
+      h3
+        color light-color1
+
+      p
+        margin 0 auto
+        max-width 75%
+        text-align justify
+  
+  p.lead-light, p.lead-dark
+    display block
+    margin 0 auto
+    padding 0 0 1em
+    text-align center
+    width 75%
+
+    a
+      &:hover
+        text-decoration none
+
+  p.lead-light
+    color light-color1
+
+    a
+      color light-color1
+
+  p.lead-dark
+    color #444
+
+    a
+      color #444
+
+  .hr-light, .hr-dark
+    border-radius 50%
+    height 2px
+    margin 2px auto
+    width 100px
+
+  .hr-light
+    background-color light-color2
+
+  .hr-dark
+    background-color #444
+
+  .speakers
+    padding 2em 0
+
+    .list
+      margin 6em 0 6em
+
+      .speaker
+        img
+          border-radius 100%
+          height 250px
+          width 250px
+
+        .fullname
+          color #222
+          font-size 20pt
+          font-weight 900
+          margin-top 1em
+
+        .occupation
+          color #444
+          font-size 14pt
+          font-weight 700
+  
+  .register
+    background-color dark-color2
+    padding 1em 0 4em
+
+    .statistics
+      color light-color1
+      padding 4em 0 2em
+      text-align center
+
+      .num
+        display inline-block
+        font-size 72pt
+        position relative
+        top .25em
+
+    .form
+      padding 2em 4em 1em 1em
+
+      input:not([type=submit])
+        background-color transparent
+        border none
+        border-bottom 2px solid light-color3
+        border-radius none
+        color light-color1
+        display block
+        font-size 14pt
+        margin 2em 0
+        padding 2px 4px 4px
+        width 75%
+
+        &:focus
+          border-bottom 2px solid light-color2
+
+      input[type=submit]
+        background-color dark-color1
+        border 2px solid dark-color1
+        color light-color2
+        cursor pointer
+        padding .75em 4em
+
+        &:hover
+          background-color dark-color3
+          border 2px solid dark-color3
+
+        &:disabled
+          background-color dark-color3
+          border 2px solid dark-color3
+          cursor default
+
+#toast-message
+  background-color dark-color4
+  border-radius 4px
+  box-shadow 0 0 2px #222
+  bottom 5em
+  color light-color1
+  font-size 12pt
+  font-weight 500
+  margin-bottom -10em
+  padding .5em 2em
+  position fixed
+  right 1em
+  transition margin-bottom .5s
+  -webkit-transition margin-bottom .5s
+
+footer
+  background-color dark-color1
+  color light-color2
+  font-size 10pt
+  padding 2em 0
+  text-align center
+
+  .bottom
+    font-size 8pt
+    margin .25em 0 0
+
+    a
+      color light-color1
+      text-decoration underline
+
+      &:hover
+        text-decoration none
+

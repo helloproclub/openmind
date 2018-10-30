@@ -1,0 +1,30 @@
+!!! 5
+
+%html{lang: 'en'}
+  %head
+    %meta{charset: 'utf-8'}
+    %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
+    %meta{name: 'X-UA-Compatible', content: 'IE=edge'}
+    %title
+      = locals[:title]
+    %meta{name: 'author', content: 'Proclub'}
+    %meta{name: 'description', content: 'Informasi lebih lengkap mengenai Open Mind Proclub 2018 serta form registrasinya ada di sini!'}
+    %link{rel: 'stylesheet', type: 'text/css', href: 'https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css'}
+    %link{rel: 'stylesheet', type: 'text/css', href: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap-grid.min.css'}
+    %link{rel: 'stylesheet', type: 'text/css', href: to('stylesheet')}
+    %link{href: 'https://fonts.googleapis.com/css?family=Roboto', rel: 'stylesheet'}
+    %link{rel: 'shortcut icon', type: 'image/x-icon', href: to('/img/proclub-logo-small.png')}
+  %body
+    %main
+      = yield
+    %footer
+      .claim
+        Built
+        %strong single-handedly
+        with
+        %strong.love love
+        by a certain Proclub member.
+      .bottom
+        %a{href: to('about')} About
+        this web application.
+

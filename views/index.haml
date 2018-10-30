@@ -1,0 +1,201 @@
+.header
+  .row
+    .col-sm{align: 'right'}
+      .calendar
+        .month Oct
+        .date 31
+    .col-sm
+      .hello
+        .jumbot
+          Say
+          %span.bold hello
+          to
+          %br
+          %strong.proclub Proclub
+          %br
+          %p.lead
+            It's been forever but now it's time for
+            %br
+            %span.bold open mind
+
+  .schedule
+    .when
+      %strong.bold 06.30 PM
+      to
+      %strong.bold 09.00 PM
+    .where
+      %strong.bold E302 (IF2.03.02)
+      %br
+      %a{href: 'https://www.google.com/maps/@-6.9745254,107.6300367,17z', target: '_blank'} Kultubai Utara
+      , School of Computing
+.reasons
+  %h2.light.title
+    Why Proclub?
+  %p.lead-light
+    Still in doubt? Hear this out!
+    %br
+    Top three reasons to join Proclub.
+  .hr-light
+  .row
+    .col-sm
+      .boxer
+        %h3 Love to Compete
+        %p
+          We are all love to compete.
+          That is how we evaluate our own skills!
+          How many honors &amp; awards we got?
+          National level? International level?
+          Well, a lot!
+    .col-sm
+      .boxer
+        %h3 Ain't the Smartest One Anymore
+        %p
+          Ever feel be the smartest one in your class?
+          You won't feel the same in Proclub.
+          We are all crazy fellow who loves to improve ourself.
+          Don't stop to learn or you will be left behind.
+    .col-sm
+      .boxer
+        %h3 Industry Ready
+        %p
+          Countless Proclub members already have their own job.
+          Be it part-time, full-time, or own a startup.
+          Several of them already joined unicorn startup company even before graduation.
+.speakers
+  %h2.dark.title
+    Speakers
+  %p.lead-dark
+    What's the fox say?
+    %br
+    Umm, why don't you hear our almunis talk instead?
+  .hr-dark
+
+  .row.list
+    .col-sm{align: 'center'}
+      .speaker
+        %img{src: to('/img/speaker1.jpg')}
+        .fullname
+          Speaker One
+        .occupation
+          Software Engineer at Bukalapak
+    .col-sm{align: 'center'}
+      .speaker
+        %img{src: to('/img/speaker1.jpg')}
+        .fullname
+          Speaker Two
+        .occupation
+          Software Engineer at Bukalapak
+.register
+  %h2.light.title
+    Register Yourself
+  %p.lead-light
+    Use your iGracias SSO account to register on this event.
+    %br
+    Do not worry, we won't store your SSO password.
+    %br
+    %a{href: 'https://github.com/helloproclub/openmind', target: '_blank'} Here
+    check our engine and rest assured!
+  .hr-light
+  %form
+    .row
+      .col-sm
+        .row.statistics
+          .col{align: 'right'}
+            %span.num
+              = locals[:seats]
+            seat(s) available
+          .col
+            %span.num
+              = locals[:waiting_number]
+            student(s) in waiting list
+      .col-sm
+        .form{align: 'right'}
+          %input{name: 'username', type: 'text', placeholder: 'SSO Username'}
+          %input{name: 'password', type: 'password', placeholder: 'SSO Password'}
+          %input{id: 'submit-trigger', type: 'submit', value: 'Register'}
+      &nbsp;
+
+#toast-message
+
+:javascript
+  function showMessage(message) {
+    const elm = document.getElementById('toast-message');
+    elm.style.marginBottom = '-10em';
+
+    window.setTimeout(() => {
+      elm.style.marginBottom = '0';
+      elm.innerHTML = message;
+    }, 500);
+  }
+
+  function closeMessage() {
+    const msg = document.getElementById('toast-message');
+    setTimeout(() => msg.style.marginBottom = '-10em', 5000);
+  }
+
+  function disableSubmit() {
+    const elm = document.getElementById('submit-trigger');
+    elm.disabled = true;
+    elm.value = 'Awaiting...';
+  }
+
+  function enableSubmit() {
+    const elm = document.getElementById('submit-trigger');
+    elm.disabled = false;
+    elm.value = 'Register';
+  }
+
+  function register() {
+    disableSubmit();
+
+    const username = document.getElementsByName('username')[0].value;
+    const password = document.getElementsByName('password')[0].value;
+
+    if (!username || !password) {
+      showMessage('Username and Password must not be blank!');
+      closeMessage();
+
+      enableSubmit();
+    }
+    else {
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+          const json = JSON.parse(this.responseText);
+          const { response } = json;
+
+          closeMessage();
+
+          if (response === 'ok')
+            showMessage('Redirecting...');
+          else if (response === 'registered')
+            showMessage('You are already registered!');
+          else if (response === 'invalid')
+            showMessage('It seems that your credentials are invalid.');
+          else if (response === 'conerr')
+            showMessage('It seems that an error occurred when connecting to SSO API.');
+          else
+            showMessage('An unknown error occurred!');
+
+          if (response !== 'ok') enableSubmit();
+
+          closeMessage();
+        }
+      };
+
+      showMessage('Sending...');
+
+      xmlhttp.open('POST', '/register', true);
+      xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      xmlhttp.send('username=' + username +'&password=' + password);
+    }
+  }
+
+  document.querySelector('form').onsubmit = function(event) {
+    event.preventDefault();
+    register();
+
+    return false;
+  };
+
