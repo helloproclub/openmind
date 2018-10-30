@@ -1,2 +1,2 @@
-*.haml text
-*.styl text
+*.haml linguist-documentation=true
+*.styl linguist-documentation=true
