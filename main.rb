@@ -18,8 +18,17 @@ if @@api_url.nil?
 end
 
 get '/' do
-  registered_participants = 0
-  awaiting_participants = 0
+  pg = PG.connect ENV['DATABASE_URL']
+
+  registered_participants = pg.exec(
+    "SELECT COUNT(participant_username) FROM participant;"
+  ).values[0][0].to_i
+
+  awaiting_participants = pg.exec(
+    "SELECT COUNT(waiting_list_username) FROM waiting_list;"
+  ).values[0][0].to_i
+
+  pg.close
 
   haml :index, layout: :default, locals: {
     title: 'Open Mind Proclub 2018',
@@ -53,31 +62,67 @@ post '/register' do
     else
       pg = PG.connect ENV['DATABASE_URL']
 
-      is_exists = pg.exec_params("SELECT COUNT(participant_username) FROM participant WHERE participant_username = $1", [post[:username]]).values == 1
+      is_exists = pg.exec_params(
+        "SELECT COUNT(participant_username) FROM participant " +
+        "WHERE participant_username = $1;",
+        [post[:username]]
+      ).values[0][0].to_i == 1
 
       if is_exists
         @msg = 'registered'
       else
-        seats = @@max_participants - pg.exec_params("SELECT COUNT(participant_username) FROM participant").values
+        seats = @@max_participants - pg.exec(
+          "SELECT COUNT(participant_username) FROM participant;"
+        ).values[0][0].to_i
 
         if seats > 0
-          query = pg.exec_params("INSERT INTO participant VALUES(, $1, $2, , , $3)", [post[:username], json[0][:email], DateTime.now])
+          query = pg.exec_params(
+            "INSERT INTO participant (" +
+            "participant_username, participant_email, created_at" +
+            ") " +
+            "VALUES ($1, $2, $3);",
+            [post[:username], json[0]['email'], DateTime.now],
+          )
 
-          if query.result_status == PGRES_COMMAND_OK
+          if query.result_status == PG::Result::PGRES_COMMAND_OK
             @msg = 'ok'
           end
         else
-          query = pg.exec_params("INSERT INTO waiting_list VALUES(, $1, $2, $3)", [post[:username], json[0][:email], DateTime.now])
+          is_exists = pg.exec_params(
+            "SELECT COUNT(waiting_list_username) FROM waiting_list " +
+            "WHERE waiting_list_username = $1;",
+            [post[:username]],
+          ).values[0][0].to_i == 1
 
-          if query.result_status == PGRES_COMMAND_OK
-            @msg = 'awaiting'
+          if is_exists
+            @msg = 'aregistered'
+          else
+            query = pg.exec_params(
+              "INSERT INTO waiting_list (" +
+              "waiting_list_username, waiting_list_email, created_at" +
+              ") " +
+              "VALUES ($1, $2, $3);",
+              [post[:username], json[0]['email'], DateTime.now],
+            )
+
+            if query.result_status == PG::Result::PGRES_COMMAND_OK
+              @msg = 'awaiting'
+            end
           end
         end
       end
+
+      pg.close
     end
   end
 
-  JSON.generate({ response: @msg, raw: res })
+  JSON.generate({ response: @msg })
+end
+
+get '/success' do
+  haml :success, layout: :single, locals: {
+    title: 'Yass! Success!',
+  }
 end
 
 get '/about' do

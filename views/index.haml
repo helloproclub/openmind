@@ -75,16 +75,16 @@
       .speaker
         %img{src: to('/img/speaker1.jpg')}
         .fullname
-          Speaker One
+          Satria Hafizh Rizkitama Harsono
         .occupation
           Software Engineer at Bukalapak
     .col-sm{align: 'center'}
       .speaker
-        %img{src: to('/img/speaker1.jpg')}
+        %img{src: to('/img/speaker2.jpeg')}
         .fullname
-          Speaker Two
+          Muhammad Alif Akbar
         .occupation
-          Software Engineer at Bukalapak
+          Mobile Application Developer at Bukalapak
 .register
   %h2.light.title
     Register Yourself
@@ -105,7 +105,7 @@
               = locals[:seats]
             seat(s) available
           .col
-            %span.num
+            %span.num#waiting-number
               = locals[:waiting_number]
             student(s) in waiting list
       .col-sm
@@ -166,16 +166,24 @@
 
           closeMessage();
 
-          if (response === 'ok')
+          if (response === 'ok') {
             showMessage('Redirecting...');
+            window.location = '/success';
+          }
           else if (response === 'registered')
             showMessage('You are already registered!');
           else if (response === 'invalid')
             showMessage('It seems that your credentials are invalid.');
           else if (response === 'conerr')
             showMessage('It seems that an error occurred when connecting to SSO API.');
-          else if (response === 'awaiting')
+          else if (response === 'awaiting') {
             showMessage('Your are now in our waiting list!');
+            const elm = document.getElementById('waiting_number');
+            const count = parseInt(elm.innerHTML);
+            elm.innerHTML = count + 1;
+          }
+          else if (response === 'aregistered')
+            showMessage('You are already registered in waiting list!');
           else
             showMessage('An unknown error occurred!');
 
