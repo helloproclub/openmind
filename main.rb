@@ -4,6 +4,7 @@ require 'stylus'
 require 'stylus/tilt'
 require 'net/http'
 require 'pg'
+require 'date'
 
 set :haml, format: :html5
 set :public_folder, File.dirname(__FILE__) + '/static'
@@ -33,8 +34,8 @@ end
 
 post '/register' do
   post = {
-    username: params['username'],
-    password: params['password'],
+    username: String.new(params['username']),
+    password: String.new(params['password']),
   }
 
   api = @@api_url % post
@@ -50,26 +51,28 @@ post '/register' do
     if json[0].kind_of?(NilClass)
       @msg = 'invalid'
     else
-      pg_host = ENV['DATABASE_HOST']
-      pg_port = ENV['DATABASE_PORT']
-      pg_username = ENV['DATABASE_USERNAME']
-      pg_password = ENV['DATABASE_PASSWORD']
-      pg_database = ENV['DATABASE_NAME']
+      pg = PG.connect ENV['DATABASE_URL']
 
-      pg = PG.connect(
-        host: pg_host,
-        port: pg_port,
-        dbname: pg_database,
-        user: pg_username,
-        password: pg_password,
-      )
-
-      is_exists = pg.exec("SELECT COUNT(participant_username) FROM participant WHERE participant_username = '$1'", [post.username]) == 1
+      is_exists = pg.exec_params("SELECT COUNT(participant_username) FROM participant WHERE participant_username = $1", [post[:username]]).values == 1
 
       if is_exists
         @msg = 'registered'
       else
-        @msg = 'hehe'
+        seats = @@max_participants - pg.exec_params("SELECT COUNT(participant_username) FROM participant").values
+
+        if seats > 0
+          query = pg.exec_params("INSERT INTO participant VALUES(, $1, $2, , , $3)", [post[:username], json[0][:email], DateTime.now])
+
+          if query.result_status == PGRES_COMMAND_OK
+            @msg = 'ok'
+          end
+        else
+          query = pg.exec_params("INSERT INTO waiting_list VALUES(, $1, $2, $3)", [post[:username], json[0][:email], DateTime.now])
+
+          if query.result_status == PGRES_COMMAND_OK
+            @msg = 'awaiting'
+          end
+        end
       end
     end
   end

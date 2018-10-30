@@ -174,6 +174,8 @@
             showMessage('It seems that your credentials are invalid.');
           else if (response === 'conerr')
             showMessage('It seems that an error occurred when connecting to SSO API.');
+          else if (response === 'awaiting')
+            showMessage('Your are now in our waiting list!');
           else
             showMessage('An unknown error occurred!');
 
