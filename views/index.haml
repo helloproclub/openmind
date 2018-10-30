@@ -1,10 +1,10 @@
 .header
   .row
-    .col-sm{align: 'right'}
+    .col-md
       .calendar
         .month Oct
         .date 31
-    .col-sm
+    .col-md
       .hello
         .jumbot
           Say
@@ -65,9 +65,11 @@
   %h2.dark.title
     Speakers
   %p.lead-dark
-    What's the fox say?
+    What does the fox say?
     %br
-    Umm, why don't you hear our almunis talk instead?
+    It wouldn't gives you any knowledge.
+    %br
+    How about hear out Proclubs' veterans instead?
   .hr-dark
 
   .row.list
@@ -100,7 +102,7 @@
     .row
       .col-sm
         .row.statistics
-          .col{align: 'right'}
+          .col
             %span.num
               = locals[:seats]
             seat(s) available
@@ -109,7 +111,7 @@
               = locals[:waiting_number]
             student(s) in waiting list
       .col-sm
-        .form{align: 'right'}
+        .form
           %input{name: 'username', type: 'text', placeholder: 'SSO Username'}
           %input{name: 'password', type: 'password', placeholder: 'SSO Password'}
           %input{id: 'submit-trigger', type: 'submit', value: 'Register'}

@@ -39,7 +39,8 @@ main.single
 
 main
   .header
-    min-height 500px
+    .col-md:first-child
+      text-align right
 
     .calendar
       border .5em solid dark-color3
@@ -194,6 +195,9 @@ main
       padding 4em 0 2em
       text-align center
 
+      .col:first-child
+        text-align right
+
       .num
         display inline-block
         font-size 72pt
@@ -201,7 +205,8 @@ main
         top .25em
 
     .form
-      padding 2em 4em 1em 1em
+      padding 4em 4em 1em 1em
+      text-align right
 
       input:not([type=submit])
         background-color transparent
@@ -209,9 +214,9 @@ main
         border-bottom 2px solid light-color3
         border-radius none
         color light-color1
-        display block
+        display inline-block
         font-size 14pt
-        margin 2em 0
+        margin 1em 0
         padding 2px 4px 4px
         width 75%
 
@@ -267,3 +272,174 @@ footer
       &:hover
         text-decoration none
 
+@media only screen and (max-width: 1024px)
+  main
+    .reasons .boxer p
+      max-width 100%
+
+    .register
+      .statistics
+        padding-top 3em
+
+        .num
+          display block
+          top .125em
+
+@media only screen and (max-width: 940px)
+  main .register .form input:not([type=submit])
+    width 100%
+
+@media only screen and (max-width: 966px)
+  main .reasons h3
+    height 2.5em
+
+@media only screen and (max-width: 894px)
+  main .speakers .list .speaker
+    img
+      height 225px
+      width 225px
+
+    .fullname
+      font-size 18pt
+
+    .occupation
+      font-size 13pt
+
+@media only screen and (max-width: 809px)
+  main .speakers .list .speaker .fullname
+    font-size 17pt
+
+@media only screen and (max-width: 792px)
+  main .speakers .list .speaker .occupation
+    font-size 12pt
+
+@media only screen and (max-width: 773px)
+  main .speakers .list .speaker .fullname
+    font-size 16pt
+
+  main .register .statistics .col
+    font-size 11pt
+
+@media only screen and (max-width: 767px)
+  main .header
+    .col-md:first-child
+      margin-bottom 1em
+      text-align center
+
+      .calendar
+        margin-bottom 1em
+
+    .hello
+      margin-top 1em
+      padding-right 0
+      text-align center
+
+@media only screen and (max-width: 745px)
+  main .speakers .list .speaker .occupation
+    font-size 11pt
+
+@media only screen and (max-width: 737px)
+  main .speakers .list .speaker
+    img
+      height 200px
+      width 200px
+
+    .fullname
+      font-size 15pt
+
+  main .register
+    .statistics
+      .num
+        font-size 60pt
+
+      .col
+        font-size 10pt
+
+    .form
+      padding-top 2em
+
+@media only screen and (max-width: 720px)
+  main .speakers .list .speaker .occupation
+    font-size 10pt
+
+@media only screen and (max-width: 696px)
+  main .speakers .list .speaker .fullname
+    font-size 14pt
+
+@media only screen and (max-width: 654px)
+  main .speakers .list .speaker .fullname
+    font-size 13pt
+
+@media only screen and (max-width: 575px)
+  main
+    .reasons .boxer
+      h3
+        height auto
+
+      p
+        margin-bottom 2em
+        max-width 75%
+
+    .speakers
+      .list
+        margin-bottom 2em
+      
+      .speaker
+        margin-bottom 4em
+
+    .register
+      .statistics
+        .col:first-child
+          text-align center
+
+      .form
+        margin 1em 4em
+        padding 0
+
+        input[type=submit]
+          display block
+          margin 0 auto
+
+@media only screen and (max-width: 521px)
+  main
+    p.lead-light, p.lead-dark
+      width 90%
+
+@media only screen and (max-width: 434px)
+  main
+    p.lead-light, p.lead-dark
+      font-size 11pt
+
+    .register .form
+      margin 1em 2em
+
+@media only screen and (max-width: 370px)
+  main
+    .header
+      .calendar
+        padding 1.5em 3em
+
+        .month
+          font-size 22pt
+
+        .date
+          font-size 60pt
+
+      .hello
+        .jumbot
+          font-size 28pt
+
+          p.lead
+            font-size 14pt
+
+          strong.proclub
+            font-size 60pt
+
+      .schedule
+        font-size 14pt
+
+        .bold
+          font-size 18pt
+
+  footer .claim
+    font-size 9pt
