@@ -209,6 +209,12 @@ post '/cancel' do
   JSON.generate({ response: @msg })
 end
 
+get '/cancelled' do
+  haml :cancelled, layout: :single, locals: {
+    title: 'Aww :(',
+  }
+end
+
 get '/about' do
   haml :about, layout: :single, locals: {
     title: 'About This Application',
