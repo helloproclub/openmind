@@ -177,24 +177,26 @@ post '/cancel' do
               "FROM waiting_list LIMIT 1;",
             ).values[0]
 
-            awaiting_username = awaiting[0]
-            awaiting_email = awaiting[1]
+            unless awaiting.nil?
+              awaiting_username = awaiting[0]
+              awaiting_email = awaiting[1]
 
-            query = pg.exec_params(
-              "INSERT INTO participant (" +
-              "participant_username, participant_email, created_at" +
-              ") " +
-              "VALUES ($1, $2, $3);",
-              [awaiting_username, awaiting_email, DateTime.now],
-            )
-
-            if query.result_status == PG::Result::PGRES_COMMAND_OK
-              pg.exec_params(
-                "DELETE FROM waiting_list WHERE waiting_list_username = $1;",
-                awaiting_username,
+              query = pg.exec_params(
+                "INSERT INTO participant (" +
+                "participant_username, participant_email, created_at" +
+                ") " +
+                "VALUES ($1, $2, $3);",
+                [awaiting_username, awaiting_email, DateTime.now],
               )
 
-              @msg = 'ok'
+              if query.result_status == PG::Result::PGRES_COMMAND_OK
+                pg.exec_params(
+                  "DELETE FROM waiting_list WHERE waiting_list_username = $1;",
+                  awaiting_username,
+                )
+
+                @msg = 'ok'
+              end
             end
           end
         else
