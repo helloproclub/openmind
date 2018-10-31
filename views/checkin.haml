@@ -1,0 +1,94 @@
+%h1 Check In
+
+%p.lead
+  Check yourself in below!
+
+%form.cancel
+  .row
+    .col-sm
+      %input{name: 'username', type: 'text', placeholder: 'SSO Username'}
+    .col-sm
+      %input{id: 'submit-trigger', type: 'submit', value: 'Check Me In'}
+
+#toast-message
+
+:javascript
+  function showMessage(message) {
+    const elm = document.getElementById('toast-message');
+    elm.style.marginBottom = '-10em';
+
+    window.setTimeout(() => {
+      elm.style.marginBottom = '0';
+      elm.innerHTML = message;
+    }, 500);
+  }
+
+  function closeMessage() {
+    const msg = document.getElementById('toast-message');
+    setTimeout(() => msg.style.marginBottom = '-10em', 5000);
+  }
+
+  function disableSubmit() {
+    const elm = document.getElementById('submit-trigger');
+    elm.disabled = true;
+    elm.value = 'Awaiting...';
+  }
+
+  function enableSubmit() {
+    const elm = document.getElementById('submit-trigger');
+    elm.disabled = false;
+    elm.value = 'Check Me In';
+  }
+
+  function checkin() {
+    disableSubmit();
+
+    const username = document.getElementsByName('username')[0].value;
+
+    if (!username) {
+      showMessage('Username must not be blank!');
+      closeMessage();
+
+      enableSubmit();
+    }
+    else {
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+          const json = JSON.parse(this.responseText);
+          const { response } = json;
+
+          closeMessage();
+
+          if (response === 'ok')
+            showMessage('Done!');
+          else if (response === 'nexists')
+            showMessage('There is no such account in our participant list.');
+          else if (response === 'dberr')
+            showMessage('Err, there is an error in our database. But you could in now!');
+          else
+            showMessage('An unknown error occurred!');
+
+          enableSubmit();
+
+          closeMessage();
+        }
+      };
+
+      showMessage('Sending...');
+
+      xmlhttp.open('POST', '/checkin', true);
+      xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      xmlhttp.send('username=' + username);
+    }
+  }
+
+  document.querySelector('form').onsubmit = function(event) {
+    event.preventDefault();
+    checkin();
+
+    return false;
+  };
+
+

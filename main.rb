@@ -217,6 +217,44 @@ get '/cancelled' do
   }
 end
 
+get '/checkin' do
+  haml :checkin, layout: :single, locals: {
+    title: 'Check In',
+  }
+end
+
+post '/checkin' do
+  pg = PG.connect ENV['DATABASE_URL']
+
+  username = String.new(params['username'])
+  is_exists = pg.exec_params(
+    "SELECT COUNT(participant_username) FROM participant " +
+    "WHERE participant_username = $1",
+    [username],
+  ).values[0][0].to_i == 1
+
+  @msg = ''
+  if is_exists
+    query = pg.exec_params(
+      "UPDATE participant SET checked_in = true, checked_at = $1 " +
+      "WHERE participant_username = $2;",
+      [DateTime.now, username],
+    )
+
+    if query.result_status == PG::Result::PGRES_COMMAND_OK
+      @msg = 'ok'
+    else
+      @msg = 'dberr'
+    end
+  else
+    @msg = 'nexists'
+  end
+
+  pg.close
+
+  JSON.generate({ response: @msg })
+end
+
 get '/about' do
   haml :about, layout: :single, locals: {
     title: 'About This Application',
