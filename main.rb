@@ -55,64 +55,68 @@ post '/register' do
   if res.nil?
     @msg = 'conerr'
   else
-    json = JSON.parse res
-
-    if json[0].kind_of?(NilClass)
-      @msg = 'invalid'
+    if Net::HTTP.get_response(uri).code.to_i != 200
+      @msg = 'mt'
     else
-      pg = PG.connect ENV['DATABASE_URL']
+      json = JSON.parse res
 
-      is_exists = pg.exec_params(
-        "SELECT COUNT(participant_username) FROM participant " +
-        "WHERE participant_username = $1;",
-        [post[:username]]
-      ).values[0][0].to_i == 1
-
-      if is_exists
-        @msg = 'registered'
+      if json[0].kind_of?(NilClass)
+        @msg = 'invalid'
       else
-        seats = @@max_participants - pg.exec(
-          "SELECT COUNT(participant_username) FROM participant;"
-        ).values[0][0].to_i
+        pg = PG.connect ENV['DATABASE_URL']
 
-        if seats > 0
-          query = pg.exec_params(
-            "INSERT INTO participant (" +
-            "participant_username, participant_email, created_at" +
-            ") " +
-            "VALUES ($1, $2, $3);",
-            [post[:username], json[0]['email'], DateTime.now],
-          )
+        is_exists = pg.exec_params(
+          "SELECT COUNT(participant_username) FROM participant " +
+          "WHERE participant_username = $1;",
+          [post[:username]]
+        ).values[0][0].to_i == 1
 
-          if query.result_status == PG::Result::PGRES_COMMAND_OK
-            @msg = 'ok'
-          end
+        if is_exists
+          @msg = 'registered'
         else
-          is_exists = pg.exec_params(
-            "SELECT COUNT(waiting_list_username) FROM waiting_list " +
-            "WHERE waiting_list_username = $1;",
-            [post[:username]],
-          ).values[0][0].to_i == 1
+          seats = @@max_participants - pg.exec(
+            "SELECT COUNT(participant_username) FROM participant;"
+          ).values[0][0].to_i
 
-          if is_exists
-            @msg = 'aregistered'
-          else
+          if seats > 0
             query = pg.exec_params(
-              "INSERT INTO waiting_list (" +
-              "waiting_list_username, waiting_list_email, created_at" +
+              "INSERT INTO participant (" +
+              "participant_username, participant_email, created_at" +
               ") " +
               "VALUES ($1, $2, $3);",
               [post[:username], json[0]['email'], DateTime.now],
             )
 
             if query.result_status == PG::Result::PGRES_COMMAND_OK
-              @msg = 'awaiting'
+              @msg = 'ok'
+            end
+          else
+            is_exists = pg.exec_params(
+              "SELECT COUNT(waiting_list_username) FROM waiting_list " +
+              "WHERE waiting_list_username = $1;",
+              [post[:username]],
+            ).values[0][0].to_i == 1
+
+            if is_exists
+              @msg = 'aregistered'
+            else
+              query = pg.exec_params(
+                "INSERT INTO waiting_list (" +
+                "waiting_list_username, waiting_list_email, created_at" +
+                ") " +
+                "VALUES ($1, $2, $3);",
+                [post[:username], json[0]['email'], DateTime.now],
+              )
+
+              if query.result_status == PG::Result::PGRES_COMMAND_OK
+                @msg = 'awaiting'
+              end
             end
           end
         end
-      end
 
-      pg.close
+        pg.close
+      end
     end
   end
 
@@ -123,6 +127,86 @@ get '/success' do
   haml :success, layout: :single, locals: {
     title: 'Yass! Success!',
   }
+end
+
+get '/cancel' do
+  haml :cancel, layout: :single, locals: {
+    title: 'Aww, why?!'
+  }
+end
+
+post '/cancel' do
+  post = {
+    username: String.new(params['username']),
+    password: String.new(params['password']),
+  }
+
+  api = @@api_url % post
+  uri = URI.parse api
+  res = Net::HTTP.get uri || nil
+
+  @msg = ''
+  if res.nil?
+    @msg = 'conerr'
+  else
+    if Net::HTTP.get_response(uri).code.to_i != 200
+      @msg = 'mt'
+    else
+      json = JSON.parse res
+
+      if json[0].kind_of?(NilClass)
+        @msg = 'invalid'
+      else
+        pg = PG.connect ENV['DATABASE_URL']
+
+        is_exists = pg.exec_params(
+          "SELECT COUNT(participant_username) FROM participant " +
+          "WHERE participant_username = $1;",
+          [post[:username]]
+        ).values[0][0].to_i == 1
+
+        if is_exists
+          delete = pg.exec_params(
+            "DELETE FROM participant WHERE participant_username = $1;",
+            [post[:username]],
+          )
+
+          if delete.result_status == PG::Result::PGRES_COMMAND_OK
+            awaiting = pg.exec(
+              "SELECT waiting_list_username, waiting_list_email " +
+              "FROM waiting_list LIMIT 1;",
+            ).values[0]
+
+            awaiting_username = awaiting[0]
+            awaiting_email = awaiting[1]
+
+            query = pg.exec_params(
+              "INSERT INTO participant (" +
+              "participant_username, participant_email, created_at" +
+              ") " +
+              "VALUES ($1, $2, $3);",
+              [awaiting_username, awaiting_email, DateTime.now],
+            )
+
+            if query.result_status == PG::Result::PGRES_COMMAND_OK
+              pg.exec_params(
+                "DELETE FROM waiting_list WHERE waiting_list_username = $1;",
+                awaiting_username,
+              )
+
+              @msg = 'ok'
+            end
+          end
+        else
+          @msg = 'nexists'
+        end
+
+        pg.close
+      end
+    end
+  end
+
+  JSON.generate({ response: @msg })
 end
 
 get '/about' do

@@ -37,6 +37,36 @@ main.single
     &:hover
       text-decoration none
 
+  form.cancel
+    margin 8em 0
+
+    input:not([type=submit])
+      background-color transparent
+      border none
+      border-bottom 2px solid light-color1
+      color light-color1
+      font-size 16pt
+      padding .25em .5em
+      width 100%
+
+    input[type=submit]
+      background-color dark-color1
+      color light-color1
+      display block
+      border 2px solid dark-color1
+      font-size 16pt
+      margin -1em auto 0
+      padding 1em 4em
+      width 100%
+
+      &:hover
+        background-color dark-color3
+        border 2px solid dark-color3
+        cursor pointer
+
+      &:disabled
+        cursor default
+
 main
   .header
     .col-md:first-child
@@ -321,6 +351,15 @@ footer
     font-size 11pt
 
 @media only screen and (max-width: 767px)
+  main.single
+    form.cancel
+      input:not([type=submit])
+        margin-top 2em
+
+      input[type=submit]
+        display block
+        margin-top 2em
+
   main .header
     .col-md:first-child
       margin-bottom 1em
